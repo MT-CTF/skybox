@@ -40,21 +40,24 @@ skybox.set = function(player, number)
 		skybox.clear(player)
 	else
 		local sky = skies[number]
-		player:override_day_night_ratio(sky[3])
+		sky[5] = sky[5] or "jpg"
+		if sky[3] then
+			player:override_day_night_ratio(sky[3])
+		end
 		local textures = {
-			sky[1] .. "Up.jpg",
-			sky[1] .. "Down.jpg",
-			sky[1] .. "Front.jpg",
-			sky[1] .. "Back.jpg",
-			sky[1] .. "Left.jpg",
-			sky[1] .. "Right.jpg",
+			sky[1] .. "Up."..sky[5],
+			sky[1] .. "Down."..sky[5],
+			sky[1] .. "Front."..sky[5],
+			sky[1] .. "Back."..sky[5],
+			sky[1] .. "Left."..sky[5],
+			sky[1] .. "Right."..sky[5],
 		}
 		if player.get_sky_color ~= nil then
 			player:set_sky({
 				base_color = sky[2],
 				type = "skybox",
 				textures = textures,
-				clouds = true
+				clouds = not not sky[4]
 			})
 			player:set_sun({visible = false, sunrise_visible = false})
 			player:set_moon({visible = false})
@@ -62,7 +65,9 @@ skybox.set = function(player, number)
 		else
 			player:set_sky(sky[2], "skybox", textures, true)
 		end
-		player:set_clouds(sky[4])
+		if sky[4] then
+			player:set_clouds(sky[4])
+		end
 		player:get_meta():set_string("skybox:skybox", sky[1])
 	end
 end
@@ -70,7 +75,7 @@ end
 skybox.clear = function(player)
 	player:override_day_night_ratio(nil)
 	if player.get_sky_color ~= nil then
-		player:set_sky({base_color = "white", type = "regular"})
+		player:set_sky({base_color = "white", type = "regular", clouds = true})
 	else
 		player:set_sky("white", "regular")
 	end
